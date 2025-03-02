@@ -59,7 +59,7 @@ def initialize_database():
     conn.commit()
     conn.close()
 
-# Improved daily credits reset (should be scheduled to run at midnight in production)
+# Improved daily credits reset (in production, schedule this at midnight)
 def reset_daily_credits():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -80,7 +80,7 @@ def allowed_file(filename):
 def index():
     return render_template('index.html')
 
-# User Registration - now uses Name, Email, Contact, and Password
+# User Registration - uses Name, Email, Contact, and Password
 @app.route('/auth/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -105,7 +105,7 @@ def register():
             conn.close()
     return render_template('register.html')
 
-# User Login - now uses Email (as the user ID) and Password
+# User Login - uses Email (as the user ID) and Password
 @app.route('/auth/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -125,7 +125,6 @@ def login():
         else:
             flash('User ID or password not found.', 'error')
     return render_template('login.html')
-
 
 # User Profile with export report bonus link
 @app.route('/user/profile')
@@ -328,7 +327,7 @@ def analytics():
         SELECT name, COUNT(documents.id) as scan_count 
         FROM users 
         LEFT JOIN documents ON users.id = documents.user_id 
-        GROUP BY users.id
+        GROUP BY users.id 
         ORDER BY scan_count DESC
     ''')
     top_users = cursor.fetchall()

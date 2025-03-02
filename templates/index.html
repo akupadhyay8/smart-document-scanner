@@ -8,20 +8,34 @@
   <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
-  <header>
-    <h1 class="fade-in">Document Scanner</h1>
-    <nav class="slide-in">
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  
+  <header class="header">
+    <h1>Document Scanner</h1>
+    <nav class="nav">
       <a href="/">Home</a>
       <a href="/auth/login">Login</a>
       <a href="/auth/register">Register</a>
     </nav>
   </header>
-  <main>
-    <section class="intro">
-      <p>Scan and match your documents quickly with our advanced document scanner.</p>
+  
+  <main class="profile-main">
+    <section class="card">
+      <h2>Welcome to Document Scanner</h2>
+      <p>Scan, match, and manage your documents with ease!</p>
     </section>
   </main>
-  <footer>
+  
+  <footer class="footer">
     <p>&copy; 2025 Document Scanner Inc.</p>
   </footer>
 </body>

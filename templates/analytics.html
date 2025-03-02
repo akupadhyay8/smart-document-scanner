@@ -1,25 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Analytics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  
+  <header class="header">
     <h1>Admin Analytics</h1>
-    <h2>Top Users by Scans</h2>
-    <ul>
-        {% for user in top_users %}
-        <li>{{ user['username'] }}: {{ user['scan_count'] }} scans</li>
-        {% endfor %}
-    </ul>
-    <h2>Credit Usage</h2>
-    <ul>
-        {% for user in credit_usage %}
-        <li>{{ user['username'] }}: {{ user['credits'] }} credits</li>
-        {% endfor %}
-    </ul>
-    <a href="/">Back to Home</a>
+    <nav class="nav">
+      <a href="/admin/credits">Credit Requests</a>
+      <a href="/auth/logout">Logout</a>
+    </nav>
+  </header>
+  
+  <main class="profile-main">
+    <section class="card">
+      <h2>Top Users by Scans</h2>
+      {% if top_users %}
+        <ul>
+          {% for user in top_users %}
+            <li><strong>{{ user['name'] }}</strong>: {{ user['scan_count'] }} scans</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No scan data available.</p>
+      {% endif %}
+    </section>
+    <section class="card">
+      <h2>Credit Usage</h2>
+      {% if credit_usage %}
+        <ul>
+          {% for user in credit_usage %}
+            <li><strong>{{ user['name'] }}</strong>: {{ user['credits'] }} credits</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No credit usage data available.</p>
+      {% endif %}
+    </section>
+  </main>
+  
+  <footer class="footer">
+    <p>&copy; 2025 Document Scanner Inc.</p>
+  </footer>
 </body>
 </html>

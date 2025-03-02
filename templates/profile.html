@@ -1,21 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
-    <h1>Welcome, {{ user['username'] }}</h1>
-    <p>Credits: {{ user['credits'] }}</p>
-    <a href="/scan">Upload Document</a>
-    <h2>Your Documents</h2>
-    <ul>
-        {% for doc in documents %}
-        <li><a href="/matches/{{ doc['id'] }}">{{ doc['filename'] }}</a></li>
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
         {% endfor %}
-    </ul>
-    <a href="/auth/logout">Logout</a>
+      </div>
+    {% endif %}
+  {% endwith %}
+  
+  <header class="header">
+    <h1>Welcome, {{ user['name'] }}</h1>
+    <nav class="nav">
+      <a href="/user/profile">Profile</a>
+      <a href="/scan">Upload Document</a>
+      <a href="/auth/logout">Logout</a>
+    </nav>
+  </header>
+  
+  <main class="profile-main">
+    <section class="card user-info">
+      <h2>User Information</h2>
+      <p><strong>Name:</strong> {{ user['name'] }}</p>
+      <p><strong>Email:</strong> {{ user['email'] }}</p>
+      <p><strong>Contact:</strong> {{ user['contact'] }}</p>
+      <p><strong>Credits:</strong> {{ user['credits'] }}</p>
+    </section>
+    
+    <section class="card documents">
+      <h2>Your Documents</h2>
+      {% if documents %}
+        <div class="doc-grid">
+          {% for doc in documents %}
+            <div class="doc-card">
+              <h3>{{ doc['filename'] }}</h3>
+              <p>Uploaded on: {{ doc['upload_date'] }}</p>
+              <a href="/matches/{{ doc['id'] }}" class="btn">View Matches</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>You have not uploaded any documents yet.</p>
+      {% endif %}
+      <a href="/user/export" class="btn">Export Scan History</a>
+    </section>
+  </main>
+  
+  <footer class="footer">
+    <p>&copy; 2025 Document Scanner Inc.</p>
+  </footer>
 </body>
 </html>

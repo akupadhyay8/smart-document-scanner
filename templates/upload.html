@@ -8,7 +8,7 @@
   <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
-  <!-- Flash messages -->
+  <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div id="flash-messages">
@@ -19,16 +19,28 @@
     {% endif %}
   {% endwith %}
   
-  <div class="form-container slide-in">
-    <h2>Upload Document</h2>
-    <form method="POST" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="file">Choose Document (TXT/CSV):</label>
-        <input type="file" id="file" name="file" required>
-      </div>
-      <button type="submit" class="btn">Upload</button>
-    </form>
-    <a href="/user/profile" class="back-link">Back to Profile</a>
-  </div>
+  <header class="header">
+    <h1>Upload Document</h1>
+    <nav class="nav">
+      <a href="/user/profile">Profile</a>
+      <a href="/auth/logout">Logout</a>
+    </nav>
+  </header>
+  
+  <main class="upload-main">
+    <div class="card upload-card">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="file">Choose a Document (TXT/CSV):</label>
+          <input type="file" id="file" name="file" required>
+        </div>
+        <button type="submit" class="btn">Upload Document</button>
+      </form>
+    </div>
+  </main>
+  
+  <footer class="footer">
+    <p>&copy; 2025 Document Scanner Inc.</p>
+  </footer>
 </body>
 </html>

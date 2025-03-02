@@ -16,7 +16,6 @@ function validateRegistration() {
     return false;
   }
   
-  // Additional validations for contact number or password strength can be added.
   return true;
 }
 

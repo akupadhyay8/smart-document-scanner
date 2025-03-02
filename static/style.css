@@ -1,4 +1,5 @@
-/* Global Styles */
+/* Global & Base Styles */
+
 * {
     box-sizing: border-box;
   }
@@ -9,7 +10,6 @@
     padding: 0;
     background: #f5f7fa;
     color: #333;
-    line-height: 1.6;
   }
   
   /* Flash Messages */
@@ -44,25 +44,25 @@
     100% { opacity: 0; }
   }
   
-  /* Header */
-  header {
+  /* Header & Navigation */
+  .header {
     background: #4CAF50;
     color: #fff;
     padding: 20px;
     text-align: center;
   }
   
-  header h1 {
+  .header h1 {
     margin: 0;
     font-size: 2.5rem;
-    animation: fadeIn 2s ease-in-out;
+    animation: fadeIn 1.5s ease-in-out;
   }
   
-  nav {
+  .nav {
     margin-top: 10px;
   }
   
-  nav a {
+  .nav a {
     color: #fff;
     text-decoration: none;
     margin: 0 15px;
@@ -70,24 +70,63 @@
     transition: color 0.3s ease;
   }
   
-  nav a:hover {
+  .nav a:hover {
     color: #ddd;
   }
   
-  /* Form Container */
-  .form-container {
-    width: 90%;
-    max-width: 400px;
-    margin: 50px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    animation: slideIn 1s ease-out;
+  /* Main Content Layout */
+  .profile-main,
+  .upload-main,
+  .form-main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
   }
   
-  .form-container h2 {
+  /* Card Styles */
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .user-info p,
+  .documents p {
+    font-size: 1.1rem;
+  }
+  
+  /* Documents Grid */
+  .doc-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .doc-card {
+    background: #f1f1f1;
+    border-radius: 8px;
+    padding: 15px;
+    flex: 1 1 calc(33.333% - 20px);
     text-align: center;
+    transition: transform 0.3s ease;
+  }
+  
+  .doc-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .doc-card h3 {
+    margin-top: 0;
+  }
+  
+  /* Form & Upload Styles */
+  .form-card, .upload-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 30px;
     margin-bottom: 20px;
   }
   
@@ -104,15 +143,17 @@
   .form-group input[type="text"],
   .form-group input[type="email"],
   .form-group input[type="password"],
-  .form-group input[type="file"] {
+  .form-group input[type="file"],
+  .form-group input[type="number"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
   }
   
-  /* Button */
+  /* Button Styles */
   .btn {
+    display: inline-block;
     width: 100%;
     background: #4CAF50;
     color: #fff;
@@ -122,22 +163,39 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
+    text-decoration: none;
+    text-align: center;
   }
   
   .btn:hover {
     background: #45a049;
   }
   
-  /* Back Link */
-  .back-link {
-    display: inline-block;
+  /* Switch Link for Forms */
+  .switch-link {
+    text-align: center;
     margin-top: 15px;
-    color: #4CAF50;
-    text-decoration: none;
   }
   
-  .back-link:hover {
+  .switch-link a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .switch-link a:hover {
     text-decoration: underline;
+  }
+  
+  /* Footer */
+  .footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
   }
   
   /* Animations */
@@ -146,28 +204,16 @@
     to { opacity: 1; transform: translateY(0); }
   }
   
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(-50px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  
-  .fade-in {
-    animation: fadeIn 1.5s ease-in-out;
-  }
-  
-  .slide-in {
-    animation: slideIn 1s ease-out;
-  }
-  
   /* Responsive Design */
-  @media (max-width: 600px) {
-    header h1 {
-      font-size: 2rem;
+  @media (max-width: 768px) {
+    .doc-card {
+      flex: 1 1 calc(50% - 20px);
     }
+  }
   
-    nav a {
-      margin: 0 10px;
-      font-size: 1rem;
+  @media (max-width: 480px) {
+    .doc-card {
+      flex: 1 1 100%;
     }
   }
   
