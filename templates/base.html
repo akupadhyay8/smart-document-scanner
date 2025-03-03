@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocScan Pro | {% block title %}{% endblock %}</title>
+    <meta name="description" content="DocScan Pro - Smart Document Scanning and Matching">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">DocScan<span>Pro</span></a>
+            <div class="nav-menu">
+                {% if session.user_id %}
+                    {% if session.role == 'admin' %}
+                        <a href="/admin/analytics" class="nav-item">Dashboard</a>
+                        <a href="/admin/credits" class="nav-item">Credit Requests</a>
+                    {% else %}
+                        <a href="/profile" class="nav-item">Profile</a>
+                        <a href="/scan" class="nav-item">Scan Document</a>
+                    {% endif %}
+                    <a href="/auth/logout" class="btn btn-secondary">Logout</a>
+                {% else %}
+                    <a href="/auth/login" class="nav-item">Login</a>
+                    <a href="/auth/register" class="btn btn-primary">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }} fade-in">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; {{ current_year }} DocScanPro. All rights reserved.</p>
+            <p class="footer-note">Smart Document Scanning &amp; Matching System</p>
+        </div>
+    </footer>
+    <div class="loading-overlay"><div class="spinner"></div></div>
+</body>
+</html>

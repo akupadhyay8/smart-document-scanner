@@ -1,61 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Analytics</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  
-  <header class="header">
-    <h1>Admin Analytics</h1>
-    <nav class="nav">
-      <a href="/admin/credits">Credit Requests</a>
-      <a href="/auth/logout">Logout</a>
-    </nav>
-  </header>
-  
-  <main class="profile-main">
-    <section class="card">
-      <h2>Top Users by Scans</h2>
-      {% if top_users %}
-        <ul>
-          {% for user in top_users %}
-            <li><strong>{{ user['name'] }}</strong>: {{ user['scan_count'] }} scans</li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>No scan data available.</p>
-      {% endif %}
-    </section>
-    <section class="card">
-      <h2>Credit Usage</h2>
-      {% if credit_usage %}
-        <ul>
-          {% for user in credit_usage %}
-            <li><strong>{{ user['name'] }}</strong>: {{ user['credits'] }} credits</li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>No credit usage data available.</p>
-      {% endif %}
-    </section>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="analytics-container fade-in">
+    <div class="stats-card card">
+        <h2>System Analytics</h2>
+        <div class="stats-grid dashboard-grid">
+            <div class="stat-item">
+                <span class="value">{{ total_scans }}</span>
+                <span class="label">Total Scans</span>
+            </div>
+            <div class="stat-item">
+                <span class="value">{{ active_users }}</span>
+                <span class="label">Active Users</span>
+            </div>
+            <div class="stat-item">
+                <span class="value">{{ avg_similarity }}%</span>
+                <span class="label">Avg. Match</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-card card">
+        <h3>Scan Activity</h3>
+        <canvas id="scanChart"></canvas>
+    </div>
+
+    <div class="users-list card">
+        <h3>Top Users</h3>
+        <div class="responsive-table">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Scans</th>
+                        <th>Credits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in top_users %}
+                    <tr>
+                        <td>{{ user.name|escape }}</td>
+                        <td>{{ user.scan_count }}</td>
+                        <td>{{ user.credits }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

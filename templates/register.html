@@ -1,55 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Register</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
 
-  <header class="header">
-    <h1>Register</h1>
-  </header>
-  
-  <main class="form-main">
-    <div class="card form-card">
-      <form method="POST" onsubmit="return validateRegistration()">
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" name="name" placeholder="Your full name" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="contact">Contact Number:</label>
-          <input type="text" id="contact" name="contact" placeholder="e.g., 1234567890" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" placeholder="Create a strong password" required>
-        </div>
-        <button type="submit" class="btn">Register</button>
-      </form>
-      <p class="switch-link">Already have an account? <a href="/auth/login">Login here</a></p>
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card fade-in">
+        <h2>Create Account</h2>
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="name" class="input-label">Full Name</label>
+                <input type="text" id="name" name="name" class="input-field" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="input-label">Email</label>
+                <input type="email" id="email" name="email" class="input-field" required>
+            </div>
+            <div class="form-group">
+                <label for="contact" class="input-label">Contact Number</label>
+                <input type="tel" id="contact" name="contact" class="input-field" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="input-label">Password</label>
+                <input type="password" id="password" name="password" class="input-field" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        <p class="auth-alt">Already have an account? <a href="/auth/login">Login here</a></p>
     </div>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+</div>
+{% endblock %}

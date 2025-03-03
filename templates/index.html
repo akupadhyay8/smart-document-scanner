@@ -1,42 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Document Scanner</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  
-  <header class="header">
-    <h1>Document Scanner</h1>
-    <nav class="nav">
-      <a href="/">Home</a>
-      <a href="/auth/login">Login</a>
-      <a href="/auth/register">Register</a>
-    </nav>
-  </header>
-  
-  <main class="profile-main">
-    <section class="card">
-      <h2>Welcome to Document Scanner</h2>
-      <p>Scan, match, and manage your documents with ease!</p>
-    </section>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <h1 class="hero-title">Smart Document Scanning Made Simple</h1>
+        <p class="hero-subtitle">Upload, analyze, and manage your documents with advanced matching and analytics.</p>
+        <div class="cta-buttons">
+            {% if session.user_id %}
+                <a href="/scan" class="btn btn-primary">New Scan</a>
+            {% else %}
+                <a href="/auth/register" class="btn btn-primary">Get Started</a>
+                <a href="/auth/login" class="btn btn-secondary">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

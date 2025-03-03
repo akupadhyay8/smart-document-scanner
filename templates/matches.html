@@ -1,52 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Document Matches</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  
-  <header class="header">
-    <h1>Matching Documents</h1>
-    <nav class="nav">
-      <a href="/user/profile">Profile</a>
-      <a href="/auth/logout">Logout</a>
-    </nav>
-  </header>
-  
-  <main class="profile-main">
-    <section class="card documents">
-      {% if matches %}
-        <div class="doc-grid">
-          {% for match in matches %}
-            <div class="doc-card">
-              <h3>{{ match['filename'] }}</h3>
-              <p>Uploaded on: {{ match['upload_date'] }}</p>
+{% extends "base.html" %}
+{% block title %}Document Matches{% endblock %}
+
+{% block content %}
+<div class="matches-container fade-in">
+    <h2>Similar Documents Found for "{{ target_filename }}"</h2>
+    {% if matches %}
+    <div class="matches-grid doc-grid">
+        {% for match in matches %}
+        <div class="match-card doc-card">
+            <div class="match-header">
+                <span class="file-icon">{{ match.filename|file_icon }}</span>
+                <div class="match-details">
+                    <h4>{{ match.filename|truncate(30) }}</h4>
+                    <p class="meta">Similarity: {{ (match.similarity * 100)|round(1) }}%</p>
+                </div>
             </div>
-          {% endfor %}
+            <div class="match-actions">
+                <a href="/compare/{{ target_doc_id }}/{{ match.id }}" class="btn btn-secondary compare-btn">Compare</a>
+            </div>
         </div>
-      {% else %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
         <p>No matching documents found.</p>
-      {% endif %}
-      <a href="/user/profile" class="btn">Back to Profile</a>
-    </section>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

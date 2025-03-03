@@ -1,47 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Request Credits</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  
-  <header class="header">
-    <h1>Request Additional Credits</h1>
-    <nav class="nav">
-      <a href="/user/profile">Profile</a>
-      <a href="/auth/logout">Logout</a>
-    </nav>
-  </header>
-  
-  <main class="form-main">
-    <div class="card form-card">
-      <form method="POST">
-        <div class="form-group">
-          <label for="requested_credits">Number of Credits:</label>
-          <input type="number" id="requested_credits" name="requested_credits" min="1" required>
+{% extends "base.html" %}
+{% block title %}Request Credits{% endblock %}
+
+{% block content %}
+<div class="credit-request-container fade-in">
+    <div class="credit-card card">
+        <h2>Request Additional Credits</h2>
+        <div class="current-credits">
+            <span class="count">{{ user.credits }}</span>
+            <span class="label">Current Credits</span>
         </div>
-        <button type="submit" class="btn">Submit Request</button>
-      </form>
-      <p class="switch-link"><a href="/user/profile">Back to Profile</a></p>
+        <form method="POST" class="request-form">
+            <div class="form-group">
+                <label for="credits" class="input-label">Number of Credits</label>
+                <input type="number" id="credits" name="requested_credits" class="input-field" min="1" max="100" required>
+            </div>
+            <div class="form-actions">
+                <a href="/profile" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+            </div>
+        </form>
     </div>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Compare Documents{% endblock %}
+
+{% block content %}
+<div class="compare-container fade-in">
+    <h2>Document Comparison</h2>
+    <div class="diff-container">
+         {{ diff_html | safe }}
+    </div>
+    <a href="/profile" class="btn btn-secondary">Back to Profile</a>
+</div>
+{% endblock %}

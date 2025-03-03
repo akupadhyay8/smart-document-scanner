@@ -1,0 +1,30 @@
+Commands are non-SQL statements such as setting a property or adding a resource. 
+
+They can be used in HiveQL scripts or directly in the CLI or Beeline.
+
+quit
+exit
+
+Use quit or exit to leave the interactive shell.
+
+set
+
+Prints a list of configuration variables that are overridden by the user or Hive.
+
+set -v
+
+Prints all Hadoop and Hive configuration variables.
+
+add FILE[S] <filepath> <filepath>*
+add JAR[S] <filepath> <filepath>*
+add ARCHIVE[S] <filepath> <filepath>*
+
+Adds one or more files, jars, or archives to the list of resources in the distributed cache
+
+dfs <dfs command>
+
+Executes a dfs command from the Hive shell.
+
+! <command>
+
+Executes a shell command from the Hive shell.

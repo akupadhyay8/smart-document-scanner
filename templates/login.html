@@ -1,47 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
 
-  <header class="header">
-    <h1>Login</h1>
-  </header>
-  
-  <main class="form-main">
-    <div class="card form-card">
-      <form method="POST" onsubmit="return validateLogin()">
-        <div class="form-group">
-          <label for="email">Email (User ID):</label>
-          <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" placeholder="Your password" required>
-        </div>
-        <button type="submit" class="btn">Login</button>
-      </form>
-      <p class="switch-link">Don't have an account? <a href="/auth/register">Register here</a></p>
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card fade-in">
+        <h2>Welcome Back</h2>
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="email" class="input-label">Email</label>
+                <input type="email" id="email" name="email" class="input-field" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="input-label">Password</label>
+                <input type="password" id="password" name="password" class="input-field" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+        <p class="auth-alt">Don't have an account? <a href="/auth/register">Register here</a></p>
     </div>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+</div>
+{% endblock %}

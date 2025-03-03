@@ -1,63 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>User Profile</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  
-  <header class="header">
-    <h1>Welcome, {{ user['name'] }}</h1>
-    <nav class="nav">
-      <a href="/user/profile">Profile</a>
-      <a href="/scan">Upload Document</a>
-      <a href="/auth/logout">Logout</a>
-    </nav>
-  </header>
-  
-  <main class="profile-main">
-    <section class="card user-info">
-      <h2>User Information</h2>
-      <p><strong>Name:</strong> {{ user['name'] }}</p>
-      <p><strong>Email:</strong> {{ user['email'] }}</p>
-      <p><strong>Contact:</strong> {{ user['contact'] }}</p>
-      <p><strong>Credits:</strong> {{ user['credits'] }}</p>
-    </section>
-    
-    <section class="card documents">
-      <h2>Your Documents</h2>
-      {% if documents %}
-        <div class="doc-grid">
-          {% for doc in documents %}
-            <div class="doc-card">
-              <h3>{{ doc['filename'] }}</h3>
-              <p>Uploaded on: {{ doc['upload_date'] }}</p>
-              <a href="/matches/{{ doc['id'] }}" class="btn">View Matches</a>
-            </div>
-          {% endfor %}
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container fade-in">
+    <div class="profile-header">
+        <div class="user-info">
+            <h2>{{ user.name }}</h2>
+            <p>{{ user.email }}</p>
         </div>
-      {% else %}
-        <p>You have not uploaded any documents yet.</p>
-      {% endif %}
-      <a href="/user/export" class="btn">Export Scan History</a>
-    </section>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+        <div class="credit-status">
+            <div class="credits">
+                <span class="count">{{ user.credits }}</span>
+                <span class="label">Scan Credits</span>
+            </div>
+            <a href="/credits/request" class="btn btn-secondary">Request More</a>
+        </div>
+    </div>
+
+    <div class="documents-list">
+        <h3>Recent Scans</h3>
+        {% if documents %}
+            <div class="documents-grid doc-grid">
+                {% for doc in documents %}
+                <div class="document-card doc-card fade-in">
+                    <div class="doc-header">
+                        <span class="file-icon">{{ doc.filename|file_icon }}</span>
+                        <h4>{{ doc.filename|truncate(25) }}</h4>
+                    </div>
+                    <div class="doc-meta">
+                        <span class="date">{{ doc.upload_date|datetimeformat }}</span>
+                        <a href="/matches/{{ doc.id }}" class="btn btn-secondary">View Matches</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No documents scanned yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,46 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Upload Document</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  
-  <header class="header">
-    <h1>Upload Document</h1>
-    <nav class="nav">
-      <a href="/user/profile">Profile</a>
-      <a href="/auth/logout">Logout</a>
-    </nav>
-  </header>
-  
-  <main class="upload-main">
-    <div class="card upload-card">
-      <form method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="file">Choose a Document (TXT/CSV):</label>
-          <input type="file" id="file" name="file" required>
+{% extends "base.html" %}
+{% block title %}Upload Document{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-card fade-in">
+        <h2>New Document Scan</h2>
+        <div class="credit-info">
+            <span class="credits-remaining">{{ user.credits }} credits remaining</span>
         </div>
-        <button type="submit" class="btn">Upload Document</button>
-      </form>
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-upload upload-dropzone" id="file-upload-dropzone">
+                <input type="file" id="file-upload" name="file" accept=".txt,.csv" required>
+                <label for="file-upload" class="upload-label">
+                    <span class="upload-icon">📁</span>
+                    <span class="upload-text">Choose file or drag it here</span>
+                </label>
+                <div id="file-preview"></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Scan Document (1 credit)</button>
+        </form>
     </div>
-  </main>
-  
-  <footer class="footer">
-    <p>&copy; 2025 Document Scanner Inc.</p>
-  </footer>
-</body>
-</html>
+</div>
+{% endblock %}
