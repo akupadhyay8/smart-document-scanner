@@ -16,13 +16,14 @@ def register():
         email = request.form['email']
         contact = request.form['contact']
         password = request.form['password']
+        gender = request.form['gender']  # Capture gender value.
         password_hash = generate_password_hash(password)
         conn = get_db_connection()
         cursor = conn.cursor()
         try:
             cursor.execute(
-                'INSERT INTO users (name, email, contact, password_hash) VALUES (?, ?, ?, ?)', 
-                (name, email, contact, password_hash)
+                'INSERT INTO users (name, email, contact, password_hash, gender) VALUES (?, ?, ?, ?, ?)', 
+                (name, email, contact, password_hash, gender)
             )
             conn.commit()
             flash('Registration successful! Please log in.', 'success')
@@ -32,6 +33,7 @@ def register():
         finally:
             conn.close()
     return render_template('register.html')
+
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -48,10 +50,16 @@ def login():
             session['username'] = user['name']
             session['role'] = user['role']
             flash('Login successful!', 'success')
-            return redirect('/profile')
+            # Redirect admin users to the admin analytics dashboard,
+            # and regular users to their profile.
+            if user['role'] == 'admin':
+                return redirect('/admin/analytics')
+            else:
+                return redirect('/profile')
         else:
             flash('Invalid email or password.', 'error')
     return render_template('login.html')
+
 
 @auth_bp.route('/logout')
 def logout():

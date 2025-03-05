@@ -1,53 +1,76 @@
 {% extends "base.html" %}
-{% block title %}Analytics{% endblock %}
+{% block title %}Analytics Dashboard{% endblock %}
 
 {% block content %}
-<div class="analytics-container fade-in">
-    <div class="stats-card card">
-        <h2>System Analytics</h2>
-        <div class="stats-grid dashboard-grid">
-            <div class="stat-item">
-                <span class="value">{{ total_scans }}</span>
-                <span class="label">Total Scans</span>
-            </div>
-            <div class="stat-item">
-                <span class="value">{{ active_users }}</span>
-                <span class="label">Active Users</span>
-            </div>
-            <div class="stat-item">
-                <span class="value">{{ avg_similarity }}%</span>
-                <span class="label">Avg. Match</span>
-            </div>
-        </div>
+<div class="analytics-dashboard fade-in">
+  <h2 class="dashboard-title">Analytics Dashboard</h2>
+  
+  <!-- Summary Cards -->
+  <div class="dashboard-summary">
+    <div class="summary-card card">
+      <h3>Total Scans</h3>
+      <p>{{ total_scans }}</p>
     </div>
-
-    <div class="chart-card card">
-        <h3>Scan Activity</h3>
-        <canvas id="scanChart"></canvas>
+    <div class="summary-card card">
+      <h3>Active Users</h3>
+      <p>{{ active_users }}</p>
     </div>
-
-    <div class="users-list card">
-        <h3>Top Users</h3>
-        <div class="responsive-table">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Scans</th>
-                        <th>Credits</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in top_users %}
-                    <tr>
-                        <td>{{ user.name|escape }}</td>
-                        <td>{{ user.scan_count }}</td>
-                        <td>{{ user.credits }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="summary-card card">
+      <h3>Average Match</h3>
+      <p>{{ avg_similarity }}%</p>
     </div>
+  </div>
+  
+  <!-- Daily Scans Chart -->
+  <div class="dashboard-chart card">
+    <h3>Daily Scans</h3>
+    <canvas id="dailyScansChart" data-scans='{{ daily_scans|tojson }}'></canvas>
+  </div>
+  
+  <!-- Tables Section -->
+  <div class="dashboard-tables">
+    <div class="table-card card">
+      <h3>Top Users by Scan Count</h3>
+      <div class="responsive-table">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Scan Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in top_users %}
+            <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.scan_count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="table-card card">
+      <h3>Users with Lowest Credits</h3>
+      <div class="responsive-table">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Credits</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in low_credits %}
+            <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.credits }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -2,43 +2,72 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-<div class="profile-container fade-in">
-    <div class="profile-header">
-        <div class="user-info">
-            <h2>{{ user.name }}</h2>
-            <p>{{ user.email }}</p>
-        </div>
-        <div class="credit-status">
-            <div class="credits">
-                <span class="count">{{ user.credits }}</span>
-                <span class="label">Scan Credits</span>
-            </div>
-            <a href="/credits/request" class="btn btn-secondary">Request More</a>
-        </div>
+<div class="profile-dashboard fade-in">
+  <!-- User Details Card -->
+  <div class="user-card card">
+    <div class="user-header">
+      {% if user.gender == 'male' %}
+        <img src="{{ url_for('static', filename='maleAvtar.png') }}" alt="Male Avatar" class="avatar">
+      {% elif user.gender == 'female' %}
+        <img src="{{ url_for('static', filename='femaleAvtar.png') }}" alt="Female Avatar" class="avatar">
+      {% else %}
+        <img src="{{ url_for('static', filename='defaultAvatar.png') }}" alt="Default Avatar" class="avatar">
+      {% endif %}
+      <h2>Welcome, {{ user.name }}!</h2>
     </div>
+    <div class="user-details">
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Contact:</strong> {{ user.contact }}</p>
+      <div class="credit-info">
+        <span class="credit-number">{{ user.credits }}</span>
+        <span class="credit-text">Scan Credits</span>
+      </div>
+      {% if session.role != 'admin' %}
+        <a href="/credits/request" class="btn btn-secondary">Request More Credits</a>
+      {% endif %}
+    </div>
+  </div>
 
-    <div class="documents-list">
-        <h3>Recent Scans</h3>
-        {% if documents %}
-            <div class="documents-grid doc-grid">
-                {% for doc in documents %}
-                <div class="document-card doc-card fade-in">
-                    <div class="doc-header">
-                        <span class="file-icon">{{ doc.filename|file_icon }}</span>
-                        <h4>{{ doc.filename|truncate(25) }}</h4>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="date">{{ doc.upload_date|datetimeformat }}</span>
-                        <a href="/matches/{{ doc.id }}" class="btn btn-secondary">View Matches</a>
-                    </div>
-                </div>
-                {% endfor %}
+  <!-- Recent Scans Card -->
+  <div class="scans-card card">
+    <h3>Your Recent Scans</h3>
+    {% if documents %}
+      <div class="scans-grid">
+        {% for doc in documents %}
+          <div class="scan-item">
+            <div class="scan-header">
+              <span class="file-icon">{{ doc.filename|file_icon }}</span>
+              <h4>{{ doc.filename|truncate(25) }}</h4>
             </div>
-        {% else %}
-            <div class="empty-state">
-                <p>No documents scanned yet.</p>
+            <div class="scan-meta">
+              <p>Uploaded on: {{ doc.upload_date|datetimeformat }}</p>
+              <a href="/matches/{{ doc.id }}" class="btn btn-secondary">View Matches</a>
             </div>
-        {% endif %}
-    </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="no-scans">
+        <p>You haven't scanned any documents yet.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Credit Requests Section -->
+  <div class="requests-card card">
+    <h3>Your Credit Requests</h3>
+    {% if credit_requests %}
+      <ul class="requests-list">
+        {% for req in credit_requests %}
+          <li>
+            Requested <strong>{{ req.requested_credits }}</strong> credits on 
+            {{ req.request_date|datetimeformat }} &mdash; Status: <em>{{ req.status }}</em>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No credit requests made.</p>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

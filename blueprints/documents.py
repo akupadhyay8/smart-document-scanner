@@ -34,8 +34,11 @@ def profile():
     user = cursor.fetchone()
     cursor.execute('SELECT * FROM documents WHERE user_id = ? ORDER BY upload_date DESC', (session['user_id'],))
     documents = cursor.fetchall()
+    cursor.execute('SELECT * FROM credit_requests WHERE user_id = ? ORDER BY request_date DESC', (session['user_id'],))
+    credit_requests = cursor.fetchall()
     conn.close()
-    return render_template('profile.html', user=user, documents=documents)
+    return render_template('profile.html', user=user, documents=documents, credit_requests=credit_requests)
+
 
 @doc_bp.route('/scan', methods=['GET', 'POST'])
 def upload_document():
@@ -68,15 +71,24 @@ def upload_document():
             f.write(file_content)
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('SELECT credits FROM users WHERE id = ?', (session['user_id'],))
-        user_credits = cursor.fetchone()['credits']
-        if user_credits < 1:
-            flash('Insufficient credits. Please request more.', 'error')
-            conn.close()
-            return redirect('/profile')
+        
+        # If user is NOT admin, check if they have credits.
+        if session.get('role') != 'admin':
+            cursor.execute('SELECT credits FROM users WHERE id = ?', (session['user_id'],))
+            user_credits = cursor.fetchone()['credits']
+            if user_credits < 1:
+                flash('Insufficient credits. Please request more.', 'error')
+                conn.close()
+                return redirect('/profile')
+        
+        # Insert the document.
         cursor.execute('INSERT INTO documents (user_id, filename, content) VALUES (?, ?, ?)', 
                        (session['user_id'], filename, content))
-        cursor.execute('UPDATE users SET credits = credits - 1 WHERE id = ?', (session['user_id'],))
+        
+        # Deduct a credit if the user is not an admin.
+        if session.get('role') != 'admin':
+            cursor.execute('UPDATE users SET credits = credits - 1 WHERE id = ?', (session['user_id'],))
+        
         conn.commit()
         conn.close()
         flash('Document uploaded successfully!', 'success')

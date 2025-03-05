@@ -1,47 +1,45 @@
 {% extends "base.html" %}
-{% block title %}Credit Requests{% endblock %}
+{% block title %}Manage Credit Requests{% endblock %}
 
 {% block content %}
 <div class="admin-container fade-in">
-    <div class="admin-card card">
-        <h2>Pending Credit Requests</h2>
-        <div class="requests-list">
-            {% if requests %}
-            <div class="responsive-table">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Requested</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for req in requests %}
-                        <tr>
-                            <td>{{ req.name|escape }}</td>
-                            <td>{{ req.requested_credits }}</td>
-                            <td>{{ req.request_date|datetimeformat }}</td>
-                            <td class="actions">
-                                <form action="/admin/credits/approve/{{ req.id }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-primary">Approve</button>
-                                </form>
-                                <form action="/admin/credits/deny/{{ req.id }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-secondary">Deny</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <p>No pending requests.</p>
-            </div>
-            {% endif %}
-        </div>
+  <div class="admin-card card">
+    <h2>Pending Credit Requests</h2>
+    {% if requests %}
+    <div class="responsive-table">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Requested Credits</th>
+            <th>Request Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in requests %}
+          <tr>
+            <td>{{ req.name }}</td>
+            <td>{{ req.requested_credits }}</td>
+            <td>{{ req.request_date|datetimeformat }}</td>
+            <td>{{ req.status }}</td>
+            <td>
+              <form action="/admin/credits/approve/{{ req.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-primary">Approve</button>
+              </form>
+              <form action="/admin/credits/deny/{{ req.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-secondary">Deny</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {% else %}
+      <p>No pending credit requests.</p>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

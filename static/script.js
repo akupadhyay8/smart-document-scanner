@@ -3,17 +3,27 @@ document.addEventListener('DOMContentLoaded', () => {
   initFileUpload();
   initCreditMeter();
   initFormValidation();
-  initCharts();
-  // Optionally: initTooltips(); initDataTables(); if needed.
-  // Automatically fade out flash messages after 3 seconds
+  initDailyScansChart(); // Initialize analytics chart if present.
+  
+  // Automatically fade out flash messages after 3 seconds.
   setTimeout(() => {
     const flashMessages = document.querySelectorAll('.flash');
     flashMessages.forEach((msg) => {
       msg.classList.add('fade-out');
     });
   }, 3000);
+  
+  // Attach compare button event listener.
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('compare-btn')) {
+      const docId = e.target.dataset.docId;
+      console.log('Comparing document:', docId);
+      // Implement AJAX call or redirect logic for document comparison.
+    }
+  });
 });
 
+// Highlight the active navigation item.
 function initSidebar() {
   const currentPath = window.location.pathname;
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -23,13 +33,13 @@ function initSidebar() {
   });
 }
 
+// Handle drag & drop file upload preview.
 function initFileUpload() {
   const dropZone = document.querySelector('.upload-dropzone');
   const fileInput = document.querySelector('#file-upload');
   
   if (!dropZone || !fileInput) return;
 
-  // Drag & Drop events
   ['dragenter', 'dragover'].forEach(eventName => {
     dropZone.addEventListener(eventName, (e) => {
       e.preventDefault();
@@ -73,6 +83,7 @@ function initFileUpload() {
   }
 }
 
+// Initialize credit meter based on user's current credits.
 function initCreditMeter() {
   const meter = document.querySelector('.meter-progress');
   const creditCountEl = document.querySelector('.credit-count');
@@ -83,6 +94,7 @@ function initCreditMeter() {
   meter.style.width = `${Math.min(percentage, 100)}%`;
 }
 
+// Validate form inputs.
 function initFormValidation() {
   document.querySelectorAll('.input-field').forEach(input => {
     input.addEventListener('input', () => {
@@ -102,6 +114,7 @@ function validateInput(input) {
   }
 }
 
+// Utility function to get file icon based on extension.
 function getFileIcon(filename) {
   const ext = filename.split('.').pop().toLowerCase();
   const icons = {
@@ -113,6 +126,7 @@ function getFileIcon(filename) {
   return icons[ext] || '📁';
 }
 
+// Utility function to format file size.
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -121,6 +135,7 @@ function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// Show and hide a loading overlay during async operations.
 function showLoading() {
   document.querySelector('.loading-overlay').classList.add('active');
 }
@@ -132,37 +147,40 @@ function hideLoading() {
 document.querySelectorAll('form').forEach(form => {
   form.addEventListener('submit', () => showLoading());
 });
-
 window.addEventListener('beforeunload', () => hideLoading());
 
-function initCharts() {
-  const ctx = document.getElementById('scanChart');
-  if (ctx) {
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [{
-          label: 'Scans per Month',
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: 'rgba(37, 99, 235, 0.2)',
-          borderColor: 'rgba(37, 99, 235, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
+// Initialize the daily scans chart using Chart.js.
+function initDailyScansChart() {
+  const canvas = document.getElementById('dailyScansChart');
+  if (!canvas) return;
+  
+  // The daily scans data is stored in a data attribute (as JSON).
+  const dailyScansData = JSON.parse(canvas.dataset.scans);
+  const labels = dailyScansData.map(item => item.scan_date);
+  const scans = dailyScansData.map(item => item.scans);
+  
+  const ctx = canvas.getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Daily Scans',
+        data: scans,
+        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+        borderColor: 'rgba(37, 99, 235, 1)',
+        borderWidth: 2,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
       }
-    });
-  }
+    }
+  });
 }
-
-// Compare button functionality
-document.addEventListener('click', function(e) {
-  if (e.target && e.target.classList.contains('compare-btn')) {
-    const docId = e.target.dataset.docId;
-    console.log('Comparing document:', docId);
-    // Implement AJAX call or redirect logic for document comparison.
-  }
-});

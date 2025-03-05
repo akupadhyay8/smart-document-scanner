@@ -1,0 +1,22 @@
+
+Bonus (AI-Powered Matching):
+If you want to enhance document matching, you can integrate AI-based similarity analysis:
+a. OpenAI API (GPT models)
+b. Google Gemini
+c. DeepSeek AI
+d. Self-hosted NLP models (e.g., spaCy, BERT, Llama2)
+AI models can improve semantic similarity detection beyond basic word matching.
+
+
+Evaluation Criteria:
+1. Functionality: Do the credit system and document matching features work correctly?
+2. Performance: Can the system handle multiple users and large document datasets?
+3. Security: Are user passwords and data stored securely?
+4. Scalability: Can the system support multiple users on a local server?
+5. Code Quality: Is the code clean, modular, and well-documented?
+6. AI Bonus: If AI-powered document matching is implemented, how effectively does it improve accuracy?
+
+
+I am particularly interested in applying my knowledge of AI and data science to practical, impactful projects, and I am excited about the opportunity to contribute to BASIS VECTORS CAPITAL. I believe my academic background and skills in AI and machine learning make me an excellent candidate for AI Enthusiast.
+Thank you for your time and consideration. I look forward to the opportunity to discuss how I can contribute to your team.
+

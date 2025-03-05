@@ -41,6 +41,7 @@ def initialize_database():
             email TEXT UNIQUE NOT NULL,
             contact TEXT NOT NULL,
             password_hash TEXT NOT NULL,
+            gender TEXT DEFAULT 'others',
             role TEXT DEFAULT 'user',
             credits INTEGER DEFAULT 20,
             last_reset DATE DEFAULT CURRENT_DATE
@@ -69,7 +70,23 @@ def initialize_database():
             details TEXT,
             FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )''')
-    logging.info("Database initialized successfully.")
+        
+        # Seed a default admin account if one doesn't exist.
+        admin_email = os.environ.get('ADMIN_EMAIL', 'akupadhyay810@gmail.com')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE role = 'admin'")
+        admin = cursor.fetchone()
+        if not admin:
+            admin_password = os.environ.get('ADMIN_PASSWORD', '123')
+            admin_password_hash = generate_password_hash(admin_password)
+            # You can modify the name, contact, and gender as needed.
+            cursor.execute(
+                "INSERT INTO users (name, email, contact, password_hash, gender, role) VALUES (?, ?, ?, ?, ?, ?)",
+                ('Site Administrator', admin_email, '8171090072', admin_password_hash, 'male', 'admin')
+            )
+            conn.commit()
+            print("Default admin account created. Email:", admin_email)
+
 
 def reset_daily_credits():
     with get_db_connection() as conn:
