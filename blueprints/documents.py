@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, flash, session, Response
 import os
 import sqlite3
 import difflib
-import re
+from flask import Blueprint, render_template, request, redirect, flash, session, Response
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from Levenshtein import distance as levenshtein_distance
+import uuid
+from utils.nlp_utils import get_local_embedding, cosine_similarity_local
 
 doc_bp = Blueprint('documents', __name__, template_folder='../templates')
 UPLOAD_FOLDER = 'uploads'
@@ -22,7 +22,6 @@ def get_db_connection():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 @doc_bp.route('/profile')
 def profile():
     if 'user_id' not in session:
@@ -38,7 +37,6 @@ def profile():
     credit_requests = cursor.fetchall()
     conn.close()
     return render_template('profile.html', user=user, documents=documents, credit_requests=credit_requests)
-
 
 @doc_bp.route('/scan', methods=['GET', 'POST'])
 def upload_document():
@@ -65,14 +63,17 @@ def upload_document():
             except UnicodeDecodeError:
                 flash('Unsupported file encoding. Please upload a valid text file.', 'error')
                 return redirect('/scan')
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        with open(filepath, 'wb') as f:
-            f.write(file_content)
+        original_filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
+        filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
+        try:
+            with open(filepath, 'wb') as f:
+                f.write(file_content)
+        except Exception as e:
+            flash('Error saving file.', 'error')
+            return redirect('/scan')
         conn = get_db_connection()
         cursor = conn.cursor()
-        
-        # If user is NOT admin, check if they have credits.
         if session.get('role') != 'admin':
             cursor.execute('SELECT credits FROM users WHERE id = ?', (session['user_id'],))
             user_credits = cursor.fetchone()['credits']
@@ -80,21 +81,19 @@ def upload_document():
                 flash('Insufficient credits. Please request more.', 'error')
                 conn.close()
                 return redirect('/profile')
-        
-        # Insert the document.
-        cursor.execute('INSERT INTO documents (user_id, filename, content) VALUES (?, ?, ?)', 
-                       (session['user_id'], filename, content))
-        
-        # Deduct a credit if the user is not an admin.
-        if session.get('role') != 'admin':
-            cursor.execute('UPDATE users SET credits = credits - 1 WHERE id = ?', (session['user_id'],))
-        
-        conn.commit()
-        conn.close()
-        flash('Document uploaded successfully!', 'success')
+        try:
+            cursor.execute('INSERT INTO documents (user_id, filename, original_filename, content) VALUES (?, ?, ?, ?)', 
+                           (session['user_id'], unique_filename, original_filename, content))
+            if session.get('role') != 'admin':
+                cursor.execute('UPDATE users SET credits = credits - 1 WHERE id = ?', (session['user_id'],))
+            conn.commit()
+            flash('Document uploaded successfully!', 'success')
+        except Exception as e:
+            flash('Error uploading document.', 'error')
+        finally:
+            conn.close()
         return redirect('/profile')
     
-    # For GET requests, fetch the user to pass into the template.
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],))
@@ -107,34 +106,42 @@ def get_matches(doc_id):
     if 'user_id' not in session:
         flash('Please log in to view matches.', 'error')
         return redirect('/auth/login')
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT content, filename FROM documents WHERE id = ?', (doc_id,))
-    target_row = cursor.fetchone()
-    if not target_row:
-        flash('Document not found.', 'error')
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT content, original_filename, filename FROM documents WHERE id = ?', (doc_id,))
+        target_row = cursor.fetchone()
+        if not target_row:
+            flash('Document not found.', 'error')
+            conn.close()
+            return redirect('/profile')
+        target_content = target_row['content']
+        target_filename = target_row['original_filename'] or target_row['filename']
+        target_embedding = get_local_embedding(target_content)
+        cursor.execute('SELECT * FROM documents WHERE user_id = ? AND id != ?', (session['user_id'], doc_id))
+        candidate_docs = cursor.fetchall()
         conn.close()
+    except Exception as e:
+        flash('Error processing document matches.', 'error')
         return redirect('/profile')
-    target_content = target_row['content']
-    target_filename = target_row['filename']
-    
-    cursor.execute('SELECT * FROM documents WHERE user_id = ? AND id != ?', (session['user_id'], doc_id))
-    documents = cursor.fetchall()
-    conn.close()
     
     matches = []
-    for doc in documents:
-        # Use difflib to calculate a similarity ratio.
-        similarity_ratio = difflib.SequenceMatcher(None, target_content, doc['content']).ratio()
-        if similarity_ratio > 0.1:  # Only consider documents with at least 10% similarity.
-            match = dict(doc)
-            match['similarity'] = similarity_ratio
-            matches.append(match)
+    threshold = 0.7
+    try:
+        for doc in candidate_docs:
+            candidate_text = doc['content']
+            candidate_embedding = get_local_embedding(candidate_text)
+            similarity = cosine_similarity_local(target_embedding, candidate_embedding)
+            if similarity >= threshold:
+                match = dict(doc)
+                match['display_filename'] = match.get('original_filename') or match['filename']
+                match['similarity'] = similarity
+                matches.append(match)
+        matches = sorted(matches, key=lambda x: x['similarity'], reverse=True)
+    except Exception as e:
+        flash('Error computing similarity for matches.', 'error')
+        matches = []
     
-    # Sort matches descending by similarity.
-    matches = sorted(matches, key=lambda x: x['similarity'], reverse=True)
-    
-    # Pass target_doc_id to the template for comparison links.
     return render_template('matches.html', matches=matches, target_doc_id=doc_id, target_filename=target_filename)
 
 @doc_bp.route('/user/export')
@@ -144,12 +151,13 @@ def export_report():
         return redirect('/auth/login')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT filename, upload_date FROM documents WHERE user_id = ?', (session['user_id'],))
+    cursor.execute('SELECT original_filename, upload_date FROM documents WHERE user_id = ?', (session['user_id'],))
     documents = cursor.fetchall()
     conn.close()
     report = "Your Scan History:\n\n"
     for doc in documents:
-        report += f"Filename: {doc['filename']} - Uploaded on: {doc['upload_date']}\n"
+        filename = doc['original_filename'] or "Unknown"
+        report += f"Filename: {filename} - Uploaded on: {doc['upload_date']}\n"
     return Response(report, mimetype='text/plain', headers={"Content-Disposition": "attachment;filename=scan_history.txt"})
 
 @doc_bp.route('/credits/request', methods=['GET', 'POST'])
@@ -175,14 +183,12 @@ def credit_request():
         flash('Credit request submitted successfully.', 'success')
         return redirect('/profile')
     
-    # For GET requests, fetch the user to pass into the template.
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],))
     user = cursor.fetchone()
     conn.close()
     return render_template('credit_request.html', user=user)
-
 
 @doc_bp.route('/compare/<int:doc_id>/<int:match_id>')
 def compare_docs(doc_id, match_id):
@@ -192,9 +198,9 @@ def compare_docs(doc_id, match_id):
     
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT filename, content FROM documents WHERE id = ?', (doc_id,))
+    cursor.execute('SELECT original_filename, content FROM documents WHERE id = ?', (doc_id,))
     doc1 = cursor.fetchone()
-    cursor.execute('SELECT filename, content FROM documents WHERE id = ?', (match_id,))
+    cursor.execute('SELECT original_filename, content FROM documents WHERE id = ?', (match_id,))
     doc2 = cursor.fetchone()
     conn.close()
     
@@ -202,18 +208,4 @@ def compare_docs(doc_id, match_id):
         flash('One of the documents was not found.', 'error')
         return redirect('/profile')
     
-    # Split the content into lines and filter out empty lines.
-    lines1 = [line for line in doc1['content'].splitlines() if line.strip() != ""]
-    lines2 = [line for line in doc2['content'].splitlines() if line.strip() != ""]
-    
-    # Generate an HTML diff using difflib.HtmlDiff.
-    html_diff = difflib.HtmlDiff().make_table(
-        lines1,
-        lines2,
-        fromdesc=f"From: {doc1['filename']} (F)",
-        todesc=f"To: {doc2['filename']} (T)",
-        context=True,
-        numlines=2
-    )
-    
-    return render_template('compare.html', diff_html=html_diff)
+    return render_template('compare_side.html', doc1=doc1, doc2=doc2)

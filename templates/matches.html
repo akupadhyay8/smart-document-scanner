@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Document Matches{% endblock %}
-
 {% block content %}
 <div class="matches-container fade-in">
     <h2>Similar Documents Found for "{{ target_filename }}"</h2>
@@ -9,14 +8,14 @@
         {% for match in matches %}
         <div class="match-card doc-card">
             <div class="match-header">
-                <span class="file-icon">{{ match.filename|file_icon }}</span>
+                <span class="file-icon">{{ match.display_filename|file_icon }}</span>
                 <div class="match-details">
-                    <h4>{{ match.filename|truncate(30) }}</h4>
+                    <h4>{{ match.display_filename|truncate(30) }}</h4>
                     <p class="meta">Similarity: {{ (match.similarity * 100)|round(1) }}%</p>
                 </div>
             </div>
             <div class="match-actions">
-                <a href="/compare/{{ target_doc_id }}/{{ match.id }}" class="btn btn-secondary compare-btn">Compare</a>
+                <a href="/compare/{{ target_doc_id }}/{{ match.id }}" class="btn btn-secondary compare-btn" data-doc-id="{{ match.id }}">Compare</a>
             </div>
         </div>
         {% endfor %}

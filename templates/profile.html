@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Profile{% endblock %}
-
 {% block content %}
 <div class="profile-dashboard fade-in">
-  <!-- User Details Card -->
   <div class="user-card card">
     <div class="user-header">
       {% if user.gender == 'male' %}
@@ -11,7 +9,7 @@
       {% elif user.gender == 'female' %}
         <img src="{{ url_for('static', filename='femaleAvtar.png') }}" alt="Female Avatar" class="avatar">
       {% else %}
-        <img src="{{ url_for('static', filename='defaultAvatar.png') }}" alt="Default Avatar" class="avatar">
+        <img src="{{ url_for('static', filename='others.png') }}" alt="Default Avatar" class="avatar">
       {% endif %}
       <h2>Welcome, {{ user.name }}!</h2>
     </div>
@@ -19,16 +17,19 @@
       <p><strong>Email:</strong> {{ user.email }}</p>
       <p><strong>Contact:</strong> {{ user.contact }}</p>
       <div class="credit-info">
-        <span class="credit-number">{{ user.credits }}</span>
-        <span class="credit-text">Scan Credits</span>
+        {% if session.role == 'admin' %}
+          <span class="credit-number">Unlimited</span>
+          <span class="credit-text">Scan Credits</span>
+        {% else %}
+          <span class="credit-number">{{ user.credits }}</span>
+          <span class="credit-text">Scan Credits</span>
+        {% endif %}
       </div>
       {% if session.role != 'admin' %}
         <a href="/credits/request" class="btn btn-secondary">Request More Credits</a>
       {% endif %}
     </div>
   </div>
-
-  <!-- Recent Scans Card -->
   <div class="scans-card card">
     <h3>Your Recent Scans</h3>
     {% if documents %}
@@ -37,7 +38,7 @@
           <div class="scan-item">
             <div class="scan-header">
               <span class="file-icon">{{ doc.filename|file_icon }}</span>
-              <h4>{{ doc.filename|truncate(25) }}</h4>
+              <h4>{{ (doc.original_filename or doc.filename)|truncate(25) }}</h4>
             </div>
             <div class="scan-meta">
               <p>Uploaded on: {{ doc.upload_date|datetimeformat }}</p>
@@ -52,8 +53,6 @@
       </div>
     {% endif %}
   </div>
-
-  <!-- Credit Requests Section -->
   <div class="requests-card card">
     <h3>Your Credit Requests</h3>
     {% if credit_requests %}
@@ -61,7 +60,7 @@
         {% for req in credit_requests %}
           <li>
             Requested <strong>{{ req.requested_credits }}</strong> credits on 
-            {{ req.request_date|datetimeformat }} &mdash; Status: <em>{{ req.status }}</em>
+            {{ req.request_date|datetimeformat }} — Status: <em>{{ req.status }}</em>
           </li>
         {% endfor %}
       </ul>

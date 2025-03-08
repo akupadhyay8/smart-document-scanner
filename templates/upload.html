@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Upload Document{% endblock %}
-
 {% block content %}
 <div class="upload-container">
     <div class="upload-card fade-in">
@@ -8,17 +7,18 @@
         <div class="credit-info">
             <span class="credits-remaining">{{ user.credits }} credits remaining</span>
         </div>
-        <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <form action="/scan" method="POST" enctype="multipart/form-data" class="upload-form">
+            <!-- file upload input and preview elements -->
             <div class="file-upload upload-dropzone" id="file-upload-dropzone">
-                <input type="file" id="file-upload" name="file" accept=".txt,.csv" required>
-                <label for="file-upload" class="upload-label">
-                    <span class="upload-icon">📁</span>
-                    <span class="upload-text">Choose file or drag it here</span>
-                </label>
-                <div id="file-preview"></div>
+              <input type="file" id="file-upload" name="file" accept=".txt,.csv" required>
+              <label for="file-upload" class="upload-label">
+                <span class="upload-icon">📁</span>
+                <span class="upload-text">Choose file or drag it here</span>
+              </label>
+              <div id="file-preview"></div>
             </div>
             <button type="submit" class="btn btn-primary">Scan Document (1 credit)</button>
-        </form>
+          </form>          
     </div>
 </div>
 {% endblock %}

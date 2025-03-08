@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Compare Documents{% endblock %}
-
 {% block content %}
 <div class="compare-container fade-in">
     <h2>Document Comparison</h2>
+    <div class="compare-header">
+      <h3>{{ doc1.original_filename or doc1.filename }}</h3>
+      <h3>{{ doc2.original_filename or doc2.filename }}</h3>
+    </div>
     <div class="diff-container">
          {{ diff_html | safe }}
     </div>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}User Details{% endblock %}
+{% block content %}
+<div class="user-details-dashboard fade-in">
+  <h2>User Profile</h2>
+  <div class="user-card card">
+    <div class="user-header">
+      {% if user.gender == 'male' %}
+        <img src="{{ url_for('static', filename='maleAvtar.png') }}" alt="Male Avatar" class="avatar">
+      {% elif user.gender == 'female' %}
+        <img src="{{ url_for('static', filename='femaleAvtar.png') }}" alt="Female Avatar" class="avatar">
+      {% else %}
+        <img src="{{ url_for('static', filename='defaultAvatar.png') }}" alt="Default Avatar" class="avatar">
+      {% endif %}
+      <h2>{{ user.name }}</h2>
+    </div>
+    <div class="user-info">
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Contact:</strong> {{ user.contact }}</p>
+      <p><strong>Credits:</strong> {{ user.credits }}</p>
+    </div>
+  </div>
+  <div class="update-credits card">
+    <h3>Update User Credits</h3>
+    <form method="POST">
+      <div class="form-group">
+        <label for="credits">New Credit Amount:</label>
+        <input type="number" name="credits" id="credits" class="input-field" value="{{ user.credits }}" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Update Credits</button>
+    </form>
+  </div>
+  <a href="/admin/analytics" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

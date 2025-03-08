@@ -1,36 +1,67 @@
 {% extends "base.html" %}
 {% block title %}Analytics Dashboard{% endblock %}
-
 {% block content %}
 <div class="analytics-dashboard fade-in">
-  <h2 class="dashboard-title">Analytics Dashboard</h2>
+  <h2 class="dashboard-title">Welcome, Admin {{ session.username }}!</h2>
   
   <!-- Summary Cards -->
   <div class="dashboard-summary">
-    <div class="summary-card card">
+    <div class="summary-card clickable" id="totalScansCard">
       <h3>Total Scans</h3>
       <p>{{ total_scans }}</p>
     </div>
-    <div class="summary-card card">
+    <div class="summary-card clickable" id="activeUsersCard">
       <h3>Active Users</h3>
-      <p>{{ active_users }}</p>
+      <p>{{ active_users }} <span class="active-flag">&#x1F7E2;</span></p>
     </div>
-    <div class="summary-card card">
-      <h3>Average Match</h3>
-      <p>{{ avg_similarity }}%</p>
+    <div class="summary-card clickable" id="avgMatchCard">
+      <h3>Avg. Match</h3>
+      <p>{{ avg_similarity }}</p>
     </div>
   </div>
   
-  <!-- Daily Scans Chart -->
-  <div class="dashboard-chart card">
-    <h3>Daily Scans</h3>
-    <canvas id="dailyScansChart" data-scans='{{ daily_scans|tojson }}'></canvas>
+  <!-- Common Topics (toggle on Avg. Match click) -->
+  <div id="commonTopicsPanel" class="card topics-panel" style="display:none;">
+    <h3>Common Document Topics</h3>
+    {% if common_topics %}
+      <ul class="topics-list">
+        {% for topic, count in common_topics %}
+          <li><strong>{{ topic }}</strong> ({{ count }} occurrences)</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No topic data available.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <!-- Graph 1: Daily Scans (Line Chart) -->
+    <div class="dashboard-chart card">
+      <h3>Daily Scans</h3>
+      <canvas id="dailyScansChart" data-scans='{{ daily_scans|tojson }}'></canvas>
+    </div>
+    
+    <!-- Graph 2: Match Stats (Pie Chart) -->
+    <div class="dashboard-chart card">
+      <h3>Match Stats</h3>
+      <canvas id="matchStatsChart" data-match='{{ match_stats|tojson }}'></canvas>
+    </div>
+    
+    <!-- Graph 3: Credit Usage (Bar Chart) -->
+    <div class="dashboard-chart card">
+      <h3>Credit Usage (Users)</h3>
+      <canvas id="creditUsageChart" data-usage='{{ credit_usage|tojson }}'></canvas>
+    </div>
   </div>
   
   <!-- Tables Section -->
-  <div class="dashboard-tables">
+  <div class="tables-section">
     <div class="table-card card">
-      <h3>Top Users by Scan Count</h3>
+      <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Top Users by Scan Count</h3>
+        <a href="/admin/users" class="btn btn-secondary" style="margin: 0;">View All Users</a>
+      </div>
       <div class="responsive-table">
         <table class="data-table">
           <thead>
@@ -42,7 +73,9 @@
           <tbody>
             {% for user in top_users %}
             <tr>
-              <td>{{ user.name }}</td>
+              <td>
+                <a href="/admin/user/{{ user.id }}" class="user-detail-link">{{ user.name }}</a>
+              </td>
               <td>{{ user.scan_count }}</td>
             </tr>
             {% endfor %}

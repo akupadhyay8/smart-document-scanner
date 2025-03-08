@@ -16,7 +16,7 @@ def register():
         email = request.form['email']
         contact = request.form['contact']
         password = request.form['password']
-        gender = request.form['gender']  # Capture gender value.
+        gender = request.form['gender']
         password_hash = generate_password_hash(password)
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -34,7 +34,6 @@ def register():
             conn.close()
     return render_template('register.html')
 
-
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -50,8 +49,6 @@ def login():
             session['username'] = user['name']
             session['role'] = user['role']
             flash('Login successful!', 'success')
-            # Redirect admin users to the admin analytics dashboard,
-            # and regular users to their profile.
             if user['role'] == 'admin':
                 return redirect('/admin/analytics')
             else:
@@ -59,7 +56,6 @@ def login():
         else:
             flash('Invalid email or password.', 'error')
     return render_template('login.html')
-
 
 @auth_bp.route('/logout')
 def logout():

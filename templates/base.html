@@ -6,7 +6,6 @@
     <title>DocScan Pro | {% block title %}{% endblock %}</title>
     <meta name="description" content="DocScan Pro - Smart Document Scanning and Matching">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -33,8 +32,7 @@
             {% endif %}
           </div>
         </div>
-      </nav>      
-
+    </nav>      
     <main class="main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -45,10 +43,8 @@
                 </div>
             {% endif %}
         {% endwith %}
-        
         {% block content %}{% endblock %}
     </main>
-
     <footer class="footer">
         <div class="container">
             <p>&copy; {{ current_year }} DocScanPro. All rights reserved.</p>

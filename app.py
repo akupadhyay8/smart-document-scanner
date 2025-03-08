@@ -1,10 +1,9 @@
 import os
 from datetime import datetime
 import sqlite3
-from flask import Flask
+from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 from werkzeug.security import generate_password_hash
-from markupsafe import escape
 from dotenv import load_dotenv
 import atexit
 import logging
@@ -50,8 +49,9 @@ def initialize_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             filename TEXT NOT NULL,
+            original_filename TEXT,
             content TEXT NOT NULL,
-            upload_date DATE DEFAULT CURRENT_DATE,
+            upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )''')
         conn.execute('''CREATE TABLE IF NOT EXISTS credit_requests (
@@ -79,25 +79,23 @@ def initialize_database():
         if not admin:
             admin_password = os.environ.get('ADMIN_PASSWORD', '123')
             admin_password_hash = generate_password_hash(admin_password)
-            # You can modify the name, contact, and gender as needed.
             cursor.execute(
-                "INSERT INTO users (name, email, contact, password_hash, gender, role) VALUES (?, ?, ?, ?, ?, ?)",
-                ('Site Administrator', admin_email, '8171090072', admin_password_hash, 'male', 'admin')
+                "INSERT INTO users (name, email, contact, password_hash, gender, role, credits) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                ('Site Administrator', admin_email, '8171090072', admin_password_hash, 'male', 'admin', 9999)
             )
             conn.commit()
-            print("Default admin account created. Email:", admin_email)
-
+            logging.info("Default admin account created. Email: %s", admin_email)
 
 def reset_daily_credits():
     with get_db_connection() as conn:
         today = datetime.now().date()
         conn.execute('''UPDATE users 
-                      SET credits = CASE WHEN role = 'admin' THEN 9999 ELSE 20 END,
-                          last_reset = ?
-                      WHERE last_reset < ? OR last_reset IS NULL''',
-                   (today, today))
+                        SET credits = CASE WHEN role = 'admin' THEN 9999 ELSE 20 END,
+                            last_reset = ?
+                        WHERE last_reset < ? OR last_reset IS NULL''',
+                     (today, today))
         conn.commit()
-    logging.info("Daily credits reset.")
+    logging.info("Daily credits reset on %s.", today)
 
 # Custom Jinja filters
 @app.template_filter('file_icon')
@@ -110,7 +108,7 @@ def file_icon_filter(filename):
 
 @app.template_filter('datetimeformat')
 def datetime_format(value, format='%b %d, %Y %H:%M'):
-    if value is None:
+    if not value:
         return ""
     if isinstance(value, str):
         try:
@@ -155,7 +153,7 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 
 @app.route('/')
 def index():
-    return app.jinja_env.get_template('index.html').render(current_year=datetime.now().year)
+    return render_template('index.html', current_year=datetime.now().year)
 
 # Cleanup scheduler on exit
 atexit.register(lambda: scheduler.shutdown())
