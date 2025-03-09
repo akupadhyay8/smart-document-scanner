@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer, util
 
-# Load a pre-trained model
+# Loaded pre-trained model
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def get_local_embedding(text):

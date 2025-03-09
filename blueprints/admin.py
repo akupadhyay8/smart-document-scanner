@@ -6,7 +6,10 @@ from datetime import datetime
 import difflib
 from flask import Blueprint, render_template, flash, session, redirect, request
 
+# Create an admin blueprint to keep all admin-related routes together.
 admin_bp = Blueprint('admin', __name__, template_folder='../templates')
+
+# Helper Functions
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -21,11 +24,14 @@ def get_common_topics():
     docs = cursor.fetchall()
     conn.close()
     
+    # Merge all document content into one large string
     all_text = " ".join([doc["content"] for doc in docs])
     all_text = all_text.lower()
     translator = str.maketrans("", "", string.punctuation)
     all_text = all_text.translate(translator)
     words = all_text.split()
+
+    # Define words to ignore
     stopwords = {"the", "and", "is", "in", "to", "of", "a", "an", "for", "with", "on", "at", "by", "this", "that", "it", "as", "are", "from"}
     filtered_words = [w for w in words if w not in stopwords]
     common_topics = Counter(filtered_words).most_common(10)
@@ -46,8 +52,12 @@ def get_daily_scans_by_user():
     conn.close()
     return data
 
+# Main Analytics Route for Admin Dashboard
+
 @admin_bp.route('/analytics')
 def analytics():
+     # Ensure only admin users can access the analytics dashboard.
+
     if 'user_id' not in session or session.get('role') != 'admin':
         flash('Unauthorized access.', 'error')
         return redirect('/')
@@ -55,7 +65,7 @@ def analytics():
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # 1. Daily Scans (line chart)
+    # 1. Retrieve daily scan data for the line chart.
     cursor.execute('''
         SELECT DATE(upload_date) AS scan_date, COUNT(*) AS scans
         FROM documents
@@ -64,10 +74,10 @@ def analytics():
     ''')
     daily_scans = [dict(row) for row in cursor.fetchall()]
     
-    # Daily scans by user (for an additional line chart, if needed)
+    # Also get daily scans per user (if needed for another chart).
     daily_scans_by_user = get_daily_scans_by_user()
     
-    # 2. Top Users by Scan Count (table)
+    # 2. Get top 5 users by the number of scans.
     cursor.execute('''
         SELECT name, COUNT(documents.id) AS scan_count 
         FROM users 
@@ -79,7 +89,7 @@ def analytics():
     ''')
     top_users = [dict(row) for row in cursor.fetchall()]
     
-    # 3. Users with Lowest Credits (table)
+    # 3. Get 5 users with the lowest credits (for display in a table).
     cursor.execute('''
         SELECT name, credits FROM users
         WHERE role = 'user'
@@ -88,7 +98,7 @@ def analytics():
     ''')
     low_credits = [dict(row) for row in cursor.fetchall()]
     
-    # 4. Credit Used by Users (bar chart) - Count of scans, independent of admin changes.
+    # 4. Calculate "credits used" as the total number of scans per user.
     cursor.execute('''
         SELECT u.name, COUNT(d.id) AS credit_used
         FROM users u
@@ -99,7 +109,7 @@ def analytics():
     ''')
     credit_usage = [dict(row) for row in cursor.fetchall()]
     
-    # 5. Match Stats (pie chart): For each document, determine if it had at least one match.
+    # 5. Compute match statistics for a pie chart.
     cursor.execute('SELECT id, content FROM documents WHERE user_id IN (SELECT id FROM users WHERE role="user")')
     docs = cursor.fetchall()
     successful = 0
@@ -121,7 +131,7 @@ def analytics():
             unsuccessful += 1
     match_stats = {'successful': successful, 'unsuccessful': unsuccessful}
     
-    # 6. Additional stats (for display)
+    # 6. Calculate an average similarity metric for additional display.
     cursor.execute('SELECT content FROM documents WHERE user_id IN (SELECT id FROM users WHERE role="user")')
     all_docs = [row['content'] for row in cursor.fetchall()]
     total_similarity = 0
@@ -137,11 +147,13 @@ def analytics():
 
     conn.close()
     
+    # Calculate some aggregate stats.
     total_scans = sum(row['scans'] for row in daily_scans) if daily_scans else 0
     active_users = len([u for u in top_users if u['scan_count'] > 0])
     avg_match_display = f"{round(avg_similarity*100,1)}%" if avg_similarity is not None else "N/A"
     common_topics = get_common_topics()
     
+    # Render the analytics dashboard template with all the collected data.
     return render_template('analytics.html', 
                            daily_scans=daily_scans, 
                            daily_scans_by_user=daily_scans_by_user,
@@ -158,6 +170,8 @@ def analytics():
 
 @admin_bp.route('/credits/approve/<int:request_id>', methods=['POST'])
 def approve_credit_request(request_id):
+
+    # Only admins should be able to approve credit requests.
     if 'user_id' not in session or session.get('role') != 'admin':
         flash('Unauthorized access.', 'error')
         return redirect('/')
@@ -167,6 +181,8 @@ def approve_credit_request(request_id):
     cursor.execute("SELECT * FROM credit_requests WHERE id = ?", (request_id,))
     credit_request = cursor.fetchone()
     if credit_request:
+
+        # Mark the request as approved and add the requested credits to the user.
         cursor.execute("UPDATE credit_requests SET status = 'approved' WHERE id = ?", (request_id,))
         cursor.execute("UPDATE users SET credits = credits + ? WHERE id = ?", 
                        (credit_request['requested_credits'], credit_request['user_id']))
@@ -179,6 +195,8 @@ def approve_credit_request(request_id):
 
 @admin_bp.route('/credits/deny/<int:request_id>', methods=['POST'])
 def deny_credit_request(request_id):
+
+    # Only admins should be able to deny credit requests.
     if 'user_id' not in session or session.get('role') != 'admin':
         flash('Unauthorized access.', 'error')
         return redirect('/')
@@ -188,6 +206,7 @@ def deny_credit_request(request_id):
     cursor.execute("SELECT * FROM credit_requests WHERE id = ?", (request_id,))
     credit_request = cursor.fetchone()
     if credit_request:
+        # Mark the request as denied.
         cursor.execute("UPDATE credit_requests SET status = 'denied' WHERE id = ?", (request_id,))
         conn.commit()
         flash('Credit request denied.', 'success')
@@ -198,6 +217,7 @@ def deny_credit_request(request_id):
 
 @admin_bp.route('/credits')
 def manage_credit_requests():
+    # Admin view for managing pending credit requests.
     if 'user_id' not in session or session.get('role') != 'admin':
         flash('Unauthorized access.', 'error')
         return redirect('/')
@@ -216,6 +236,7 @@ def manage_credit_requests():
 
 @admin_bp.route('/users')
 def view_all_users():
+    # Admin view to see all users.
     if 'user_id' not in session or session.get('role') != 'admin':
         flash('Unauthorized access.', 'error')
         return redirect('/')
@@ -229,6 +250,7 @@ def view_all_users():
 
 @admin_bp.route('/user/<int:user_id>', methods=['GET', 'POST'])
 def admin_user_details(user_id):
+    # Admin view to see details of a specific user and update credits.
     if 'user_id' not in session or session.get('role') != 'admin':
         flash('Unauthorized access.', 'error')
         return redirect('/')

@@ -1,28 +1,29 @@
+// When the page finishes loading, set up all the interactive components!
 document.addEventListener('DOMContentLoaded', () => {
-  initSidebar();
-  initFileUpload();
-  initCreditMeter();
-  initFormValidation();
-  initDailyScansChart();
-  initCreditUsageChart();
-  initUserScansChart();
-  initMatchStatsChart();
+  initSidebar();             // Highlight the current navigation item.
+  initFileUpload();          // Set up the file upload area (drag & drop, preview).
+  initCreditMeter();         // Update the credit meter to show remaining scans.
+  initFormValidation();      // Enable real-time validation on form fields.
+  initDailyScansChart();     // Draw the line chart for daily scan totals.
+  initCreditUsageChart();    // Draw the bar chart for scans (credits used) per user.
+  initUserScansChart();      // Draw the line chart showing each user's daily scans.
+  initMatchStatsChart();     // Draw the pie chart for document match statistics.
   
-  // Fade out flash messages after 3 seconds
+  // Automatically fade out flash messages after 3 seconds to keep the UI clean.
   setTimeout(() => {
     document.querySelectorAll('.flash').forEach(msg => msg.classList.add('fade-out'));
   }, 3000);
   
-  // Compare button click listener
+  // Listen for clicks on "compare" buttons to eventually handle document comparisons.
   document.addEventListener('click', function(e) {
     if (e.target && e.target.classList.contains('compare-btn')) {
       const docId = e.target.dataset.docId;
       console.log('Comparing document:', docId);
-      // TODO: Implement AJAX call or redirection for comparison
+      // TODO: Implement AJAX call or redirection for document comparison here.
     }
   });
   
-  // Toggle common topics panel on Avg. Match card click
+  // Toggle the "Common Topics" panel when the Avg. Match card is clicked.
   const avgMatchCard = document.getElementById('avgMatchCard');
   const topicsPanel = document.getElementById('commonTopicsPanel');
   if (avgMatchCard && topicsPanel) {
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Navigation: Highlight the active sidebar link based on the current URL.
 function initSidebar() {
   const currentPath = window.location.pathname;
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -41,11 +43,13 @@ function initSidebar() {
   });
 }
 
+// File Upload Setup: Manage drag & drop and file selection with a preview.
 function initFileUpload() {
   const dropZone = document.querySelector('.upload-dropzone');
   const fileInput = document.querySelector('#file-upload');
   if (!dropZone || !fileInput) return;
   
+  // When a file is dragged over the drop zone, add a visual cue.
   ['dragenter', 'dragover'].forEach(eventName => {
     dropZone.addEventListener(eventName, (e) => {
       e.preventDefault();
@@ -53,6 +57,7 @@ function initFileUpload() {
     });
   });
   
+  // Remove the visual cue when the file leaves or is dropped.
   ['dragleave', 'drop'].forEach(eventName => {
     dropZone.addEventListener(eventName, (e) => {
       e.preventDefault();
@@ -60,12 +65,12 @@ function initFileUpload() {
     });
   });
   
+  // Handle dropped files: we create a new DataTransfer object so the file input can be updated.
   dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('dragover');
     const dt = e.dataTransfer;
     if (dt && dt.files && dt.files.length > 0) {
-      // Create a new DataTransfer object and add the dropped files.
       const dataTransfer = new DataTransfer();
       for (const file of dt.files) {
          dataTransfer.items.add(file);
@@ -75,12 +80,14 @@ function initFileUpload() {
     }
   });
   
+  // If a file is chosen via the file dialog, show its preview.
   fileInput.addEventListener('change', () => {
     if (fileInput.files.length > 0) {
       showFilePreview(fileInput.files[0]);
     }
   });
   
+  // Display a preview of the selected file.
   function showFilePreview(file) {
     const preview = document.querySelector('#file-preview');
     preview.innerHTML = `
@@ -95,6 +102,7 @@ function initFileUpload() {
   }
 }
 
+// Credit Meter: Update the visual meter based on the user's current credits.
 function initCreditMeter() {
   const meter = document.querySelector('.meter-progress');
   const creditCountEl = document.querySelector('.credit-count');
@@ -104,6 +112,7 @@ function initCreditMeter() {
   meter.style.width = `${Math.min(percentage, 100)}%`;
 }
 
+// Form Validation: Check user input in real time and provide feedback.
 function initFormValidation() {
   document.querySelectorAll('.input-field').forEach(input => {
     input.addEventListener('input', () => {
@@ -112,6 +121,7 @@ function initFormValidation() {
   });
 }
 
+// Validate an input field and update its parent element's style accordingly.
 function validateInput(input) {
   const parent = input.closest('.form-group');
   if (!parent) return;
@@ -123,15 +133,19 @@ function validateInput(input) {
   }
 }
 
+// Utility Functions for File Details
+// Returns an icon based on the file extension.
 function getFileIcon(filename) {
   const ext = filename.split('.').pop().toLowerCase();
   const icons = {
     txt: '📄',
-    csv: '📊',
+    csv: '📊'
+    // You can add more file type icons here.
   };
   return icons[ext] || '📁';
 }
 
+// Converts a file size in bytes to a human-readable format.
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -140,6 +154,8 @@ function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// Chart Initializations using Chart.js
+// Draw a line chart for daily scans.
 function initDailyScansChart() {
   const dailyCanvas = document.getElementById('dailyScansChart');
   if (dailyCanvas) {
@@ -176,12 +192,13 @@ function initDailyScansChart() {
   }
 }
 
+// Draw a bar chart showing how many scans (credits used) each user has performed.
 function initCreditUsageChart() {
   const creditCanvas = document.getElementById('creditUsageChart');
   if (creditCanvas) {
     const usageData = JSON.parse(creditCanvas.dataset.usage);
     const userLabels = usageData.map(item => item.name);
-    const creditUsed = usageData.map(item => item.credit_used); // Expect property credit_used from backend
+    const creditUsed = usageData.map(item => item.credit_used); // using property 'credit_used'
     const ctx2 = creditCanvas.getContext('2d');
     new Chart(ctx2, {
       type: 'bar',
@@ -204,11 +221,12 @@ function initCreditUsageChart() {
   }
 }
 
+// Draw a line chart that shows daily scan counts for each user.
 function initUserScansChart() {
   const canvas = document.getElementById('userScansChart');
   if (!canvas) return;
   const rawData = JSON.parse(canvas.dataset.userScans);
-  console.log("User Scans Data:", rawData); // Debug: Check data
+  console.log("User Scans Data:", rawData); // Debug: Log data for troubleshooting
   if (!rawData || rawData.length === 0) {
     canvas.parentElement.innerHTML = '<p style="padding:1rem; text-align:center;">No data available for User Daily Scans.</p>';
     return;
@@ -258,7 +276,7 @@ function initUserScansChart() {
   });
 }
 
-// New Function: Initialize the Match Stats Pie Chart.
+// Draw a pie chart showing match statistics: successful vs. unsuccessful matches.
 function initMatchStatsChart() {
   const matchCanvas = document.getElementById('matchStatsChart');
   if (matchCanvas) {
@@ -274,7 +292,7 @@ function initMatchStatsChart() {
           data: data,
           backgroundColor: [
             'rgba(34, 197, 94, 0.6)', // greenish for successful
-            'rgba(239, 68, 68, 0.6)'   // redish for unsuccessful
+            'rgba(239, 68, 68, 0.6)'  // reddish for unsuccessful
           ],
           borderColor: [
             'rgba(34, 197, 94, 1)',
@@ -291,15 +309,18 @@ function initMatchStatsChart() {
   }
 }
 
+// Helper function: Generate a random hex color (useful for chart lines).
 function getRandomColor() {
-  return '#' + Math.floor(Math.random()*16777215).toString(16);
+  return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
+// When the user is about to leave the page, remove the loading overlay.
 window.addEventListener('beforeunload', () => {
   const overlay = document.querySelector('.loading-overlay');
   if (overlay) overlay.classList.remove('active');
 });
 
+// Show a loading overlay when any form on the page is submitted.
 document.querySelectorAll('form').forEach(form => {
   form.addEventListener('submit', () => {
     document.querySelector('.loading-overlay').classList.add('active');

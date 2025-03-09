@@ -8,24 +8,28 @@ from dotenv import load_dotenv
 import atexit
 import logging
 
-# Load environment variables
+# Load environment variables from a .env file. This helps keep sensitive info safe.
 load_dotenv()
 
+# Create the Flask application instance.
 app = Flask(__name__)
+
+# Set the secret key for sessions. If not provided in the environment, generate a random one.
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
+# Logging & Security Configuration
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Security headers configuration
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=True,  # Enable in production
+    SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=3600  # 1 hour session timeout
 )
 
-# Database connection helper
+# Database Functions & Initialization
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
@@ -34,6 +38,7 @@ def get_db_connection():
 
 def initialize_database():
     with get_db_connection() as conn:
+        # Users table holds user details and their roles/credits.
         conn.execute('''CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -45,6 +50,7 @@ def initialize_database():
             credits INTEGER DEFAULT 20,
             last_reset DATE DEFAULT CURRENT_DATE
         )''')
+        # Documents table holds scanned documents and their details.
         conn.execute('''CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -54,6 +60,7 @@ def initialize_database():
             upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )''')
+        # Credit requests table for tracking additional credit requests by users.
         conn.execute('''CREATE TABLE IF NOT EXISTS credit_requests (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -62,6 +69,7 @@ def initialize_database():
             request_date DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )''')
+        # Activity logs table to track user activities (optional but useful).
         conn.execute('''CREATE TABLE IF NOT EXISTS activity_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -71,7 +79,7 @@ def initialize_database():
             FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )''')
         
-        # Seed a default admin account if one doesn't exist.
+        # Seeded a default admin account
         admin_email = os.environ.get('ADMIN_EMAIL', 'akupadhyay810@gmail.com')
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE role = 'admin'")
@@ -86,6 +94,7 @@ def initialize_database():
             conn.commit()
             logging.info("Default admin account created. Email: %s", admin_email)
 
+# Scheduled Tasks
 def reset_daily_credits():
     with get_db_connection() as conn:
         today = datetime.now().date()
@@ -142,7 +151,7 @@ scheduler.add_job(
 )
 scheduler.start()
 
-# Register blueprints
+# Blueprint Registration & Routes
 from blueprints.auth import auth_bp
 from blueprints.documents import doc_bp
 from blueprints.admin import admin_bp
@@ -155,9 +164,11 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 def index():
     return render_template('index.html', current_year=datetime.now().year)
 
-# Cleanup scheduler on exit
+# Cleanup scheduler on exit and shutdown.
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == '__main__':
+    # Initialize the database tables and seed the admin account if needed.
     initialize_database()
+    # Run the app. Use an ad-hoc SSL context for production
     app.run(ssl_context='adhoc' if os.environ.get('FLASK_ENV') == 'production' else None)

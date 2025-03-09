@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 
+# Create a blueprint for authentication-related routes.
 auth_bp = Blueprint('auth', __name__, template_folder='../templates')
 
 def get_db_connection():

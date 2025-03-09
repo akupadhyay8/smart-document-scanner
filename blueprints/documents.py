@@ -7,10 +7,14 @@ from datetime import datetime
 import uuid
 from utils.nlp_utils import get_local_embedding, cosine_similarity_local
 
+# Create a blueprint for document-related routes.
 doc_bp = Blueprint('documents', __name__, template_folder='../templates')
+
+# Folder where uploaded files are stored
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 
+# Ensure the upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -55,6 +59,8 @@ def upload_document():
             flash('Only TXT or CSV files are allowed.', 'error')
             return redirect('/scan')
         file_content = file.read()
+
+        # Try decoding the file content using utf-8; if that fails, try latin-1
         try:
             content = file_content.decode('utf-8')
         except UnicodeDecodeError:
@@ -63,9 +69,13 @@ def upload_document():
             except UnicodeDecodeError:
                 flash('Unsupported file encoding. Please upload a valid text file.', 'error')
                 return redirect('/scan')
+            
+        # Secure the original filename and create a unique filename to store the file.
         original_filename = secure_filename(file.filename)
         unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
         filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
+
+        # Try saving the file to disk.
         try:
             with open(filepath, 'wb') as f:
                 f.write(file_content)
@@ -74,6 +84,7 @@ def upload_document():
             return redirect('/scan')
         conn = get_db_connection()
         cursor = conn.cursor()
+        # Check if user has enough credits (unless they're an admin)
         if session.get('role') != 'admin':
             cursor.execute('SELECT credits FROM users WHERE id = ?', (session['user_id'],))
             user_credits = cursor.fetchone()['credits']
@@ -82,8 +93,10 @@ def upload_document():
                 conn.close()
                 return redirect('/profile')
         try:
+            # Insert the document record with both unique and original filenames.
             cursor.execute('INSERT INTO documents (user_id, filename, original_filename, content) VALUES (?, ?, ?, ?)', 
                            (session['user_id'], unique_filename, original_filename, content))
+            # Deduct one credit if not an admin.
             if session.get('role') != 'admin':
                 cursor.execute('UPDATE users SET credits = credits - 1 WHERE id = ?', (session['user_id'],))
             conn.commit()
@@ -94,6 +107,7 @@ def upload_document():
             conn.close()
         return redirect('/profile')
     
+    # If GET request, just load the upload page with user details.
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],))
@@ -137,6 +151,8 @@ def get_matches(doc_id):
                 match['display_filename'] = match.get('original_filename') or match['filename']
                 match['similarity'] = similarity
                 matches.append(match)
+
+        # Sort matches in descending order of similarity.
         matches = sorted(matches, key=lambda x: x['similarity'], reverse=True)
     except Exception as e:
         flash('Error computing similarity for matches.', 'error')

@@ -1,0 +1,59 @@
+Abhishek Kumar 
+Buxar, Bihar 802116 
+8171090072    akupadhyay810@gmail.com   linkedin.com/in/akupadhyay8   github.com/akupadhyay8 
+Technical Skills 
+Languages: C, C++, Java, Python, SQL, HTML, CSS, JavaScript. 
+Libraries: Pandas, NumPy, Matplotlib, Seaborn, scikit-learn, Flask, Streamlit. 
+Tools/Platforms: MySQL, Power BI, GitHub, MS Excel, Jupyter Notebook,  VS Code, PyCharm, Eclipse, MS Office. 
+Projects 
+Myntra T-Shirt Scraper | Java, Playwright, Cucumber BDD, JUnit 5, Maven    
+Jan 2025 - Feb 2025 
+• Built an automated web scraper using Java, Playwright, and Cucumber BDD to extract discounted T-shirts from Myntra.com. 
+• Implemented browser automation to apply filters, scrape product details, and sort items by highest discount.  
+• Designed a modular and reusable framework following BDD principles, ensuring scalability across brands/categories. 
+• Integrated JUnit 5 for test execution and Maven for dependency management, with detailed Cucumber reports. 
+Student Job Profile Suggester | Python, Machine Learning, Streamlit        
+Dec 2024 - Feb 2025 
+• Designed an ML model to predict job profiles based on students’ skills and subject scores using Decision Trees, Random Forest, and 
+XGBoost. 
+• Gained expertise in data preprocessing, feature encoding, and model tuning, focusing on categorical data handling and feature 
+importance in ensemble models. 
+• Achieved 97% accuracy in job prediction with insights on academics and skills via a Streamlit interface. 
+Bangalore House Price Prediction | Python, Machine Learning, Flask, HTML, CSS,  JavaScript        
+Nov 2024 - Dec 2024 
+• Developed a machine learning-based web application to predict house prices in Bangalore using user inputs and historical data, 
+with the backend powered by Flask for seamless functionality. 
+• Processed data with NumPy and pandas, using Matplotlib for insights and model performance visualization. 
+• Applied Scikit-learn for building and fine-tuning machine learning models, ensuring accurate price predictions. 
+• Developed a user-friendly frontend with HTML, CSS, and JavaScript for property price predictions. 
+Certificates 
+• Power BI for Data Science and Analytics by Edureka | Coursera      
+• Python for Data Science, AI & Development by IBM | Coursera         
+• Supervised Machine Learning: Regression and Classification by Stanford University | Coursera     
+• Excel Skills for Business by Macquarie University | Coursera         
+Summer Training 
+Dec 2024 
+Dec 2024 
+Oct 2024 
+Dec 2023 
+Solving Competitive Problems using Data Structure | LPU   
+Jun 2023 - July 2023 
+• Completed an online training at Lovely Professional University on solving competitive problems using data structures. 
+• This program provided in-depth knowledge and practical skills in applying various data structures such as arrays, linked 
+lists, trees, and graphs. 
+• Gained proficiency in algorithm design, optimization techniques, and problem-solving strategies, preparing to excel in 
+competitive programming competitions and real-world software development scenarios. 
+• Project Overview: Shortest path finder by using Dijkstra Algorithm in C++. 
+Education 
+Lovely Professional University 
+Computer Science and Engineering — Current CGPA: 7.55 
+Roorkee College of Engineering 
+Diploma in Electrical and Electronics Engineering — CGPA: 8.0    
+Vidya Mandir Sr. Sec. School  
+12th with Science — Percentage: 68%           
+2022 – Present 
+Jalandhar, Punjab 
+2019 – 2022 
+Roorkee, Uttarakhand 
+2017 – 2019 
+Haridwar, Uttarakhand
