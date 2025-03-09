@@ -128,8 +128,6 @@ function getFileIcon(filename) {
   const icons = {
     txt: '📄',
     csv: '📊',
-    doc: '📑',
-    pdf: '📘'
   };
   return icons[ext] || '📁';
 }

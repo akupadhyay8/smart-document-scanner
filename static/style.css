@@ -111,7 +111,7 @@ body {
 /* Hero Section */
 .hero {
   position: relative;
-  background: url('hero-bg.gif') no-repeat center center/cover;
+  background: url('docImage.webp') no-repeat center center/cover;
   height: 80vh;
   display: flex;
   align-items: center;
@@ -296,6 +296,7 @@ body {
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  
 }
 
 .data-table th, .data-table td {
@@ -549,10 +550,8 @@ table.diff .diff_sub {
 
 /* Dashboard Chart Container Height */
 .dashboard-chart {
-  height: 300px;  /* You can adjust this value as needed */
+  height: 300px; 
 }
-
-/* ... existing CSS ... */
 
 /* Compare Box for Document Comparison */
 .compare-box {
@@ -587,13 +586,14 @@ table.diff .diff_sub {
 /* Charts Section */
 .charts-section {
   display: grid;
+  text-align: center;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .dashboard-chart {
-  height: 300px;  /* Fixed height for charts */
+  height: 300px;
 }
 
 /* Tables Section */
@@ -634,4 +634,10 @@ table.diff .diff_sub {
 
 .dashboard-chart {
   height: 300px;
+}
+
+.user-detail-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }

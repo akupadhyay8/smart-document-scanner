@@ -73,9 +73,7 @@
           <tbody>
             {% for user in top_users %}
             <tr>
-              <td>
-                <a href="/admin/user/{{ user.id }}" class="user-detail-link">{{ user.name }}</a>
-              </td>
+              <td>{{ user.name }}</td>
               <td>{{ user.scan_count }}</td>
             </tr>
             {% endfor %}

@@ -102,7 +102,7 @@ def reset_daily_credits():
 def file_icon_filter(filename):
     ext = filename.split('.')[-1].lower()
     icons = {
-        'txt': '📄', 'csv': '📊', 'doc': '📑', 'docx': '📑', 'pdf': '📘'
+        'txt': '📄', 'csv': '📊'
     }
     return icons.get(ext, '📁')
 

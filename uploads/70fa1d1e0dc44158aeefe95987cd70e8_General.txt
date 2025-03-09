@@ -1,0 +1,84 @@
+Abhishek Kumar 
+LinkedIn: linkedin.com/in/akupadhyay8 
+GitHub: github.com/akupadhyay8   
+SKILLS 
+Email: akupadhyay810@gmail.com 
+Mobile:  +91-8171090072 
+• Languages: 
+• Libraries: 
+C, C++, Java, Python, SQL, HTML, CSS, JavaScript. 
+Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn, Flask, Streamlit. 
+• Tools/Platforms: 
+• Soft Skills: 
+MySQL, MS Excel, Power BI, GitHub, Jupyter Notebook, VS Code, PyCharm, Eclipse, MS Office. 
+Problem-Solving, Team Player, Project Management, Adaptability. 
+SUMMER TRAINING 
+Solving Competitive Problems using Data Structures          
+• About: Online summer training course on “Solving competitive problems using data structure”. 
+Jun 2023 – Jul 2023 
+• Description: This program provided in-depth knowledge and practical skills in applying various data 
+structures such as arrays, linked lists, trees, and graphs. I gained proficiency in algorithm design, 
+optimization techniques, and problem-solving strategies, preparing me to excel in competitive 
+programming competitions and real-world software development scenarios. 
+• Project Overview: Shortest path finder by using Dijkstra’s Algorithm in C++. 
+PROJECTS 
+DocScan Pro – AI-Powered Document Scanning & Management System         
+• Developed a full-stack web application for efficient document scanning, matching, and management. 
+Feb 2025 - Mar 2025 
+• Implemented secure login with role-based access for users and admins, integrated with a built-in credit system. 
+• Enabled secure document uploads with AI-driven semantic matching using SentenceTransformers for improved detection. 
+• Developed a dynamic admin dashboard to monitor user activity, track credit usage, and provide operational insights. 
+Tech Stack: Python (Flask), SQLite, HTML/CSS, and JavaScript 
+Myntra T-Shirt Scraper – Automated Web Scraping with Playwright & Cucumber BDD         
+Jan 2025 - Feb 2025 
+• Built an automated web scraper using Java, Playwright, and Cucumber BDD to extract discounted T-shirts from 
+Myntra.com. 
+• Implemented browser automation to apply filters, scrape product details, and sort items by highest discount. 
+• Designed a modular and reusable framework following BDD principles, ensuring scalability across brands/categories. 
+• Integrated JUnit 5 for test execution and Maven for dependency management, with detailed Cucumber reports. 
+Tech Stack: Java, Playwright, Cucumber BDD, JUnit 5, Maven. 
+Student Job Profile Suggester                
+Dec 2024 - Feb 2025 
+• Designed an ML model using Decision Trees, Random Forest, and XGBoost to predict job profiles from skills and scores. 
+• Streamlined data preprocessing and feature encoding with focus on categorical handling and ensemble feature importance. 
+• Achieved 97% prediction accuracy while delivering actionable insights through a Streamlit interface. 
+• Demonstrated expertise in model tuning and ensemble methods for effective job profile recommendations. 
+Tech Stack: Python, Machine Learning, Streamlit. 
+CERTIFICATES 
+• Power BI for Data Science and Analytics by Edureka | Coursera               
+• Python for Data Science, AI & Development by IBM | Coursera               
+• Supervised Machine Learning: Regression and Classification by Stanford University | Coursera           
+• Excel Skills for Business by Macquarie University | Coursera               
+ACHIEVEMENTS 
+Dec 2024 
+Dec 2024 
+Oct 2024 
+Dec 2023 
+• Solved 150+ DSA problems :          
+Solved 150+ DSA problems on various platforms. 
+• Ranked among S1 top 50% students at university : 
+For good academic performance and extracurricular activities at university. 
+• Participated in Smart India Hackathon 2023 : 
+Participated in Smart India Hackathon organized in Lovely Professional 
+University. 
+EDUCATION 
+• 
+• 
+• 
+• 
+Lovely Professional University                                                                                                                     
+Bachelor of Technology: Computer Science and Engineering: CGPA: 7.56    
+Roorkee College of Engineering      
+Diploma: Electrical and Electronics Engineering: CGPA: 8.0    
+Vidya Mandir Sr. Sec. School                                                                                                      
+Intermediate: Percentage: 68%    
+Bal Bharti Sr. Sec. School                                                                                                             
+Matriculation: CGPA: 6.8    
+Phagwara, Punjab 
+Since August 2022 
+Roorkee, Uttarakhand 
+April 2019 - March 2022 
+Haridwar, Uttarakhand 
+April 2017 - March 2019 
+Haridwar, Uttarakhand 
+April 2016 - March 2017
