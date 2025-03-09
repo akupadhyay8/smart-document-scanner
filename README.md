@@ -90,3 +90,8 @@ Document_Scanner/
 ### Install the required Python packages:
 includes Flask, APScheduler, python-dotenv, sentence-transformers (if using AI matching), and any other required packages.
 
+## Initialize the Database & Run the Application
+The database is automatically initialized when you run the app for the first time. Start the application:
+```bash
+python app.py
+
