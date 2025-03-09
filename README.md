@@ -50,6 +50,7 @@
 
 ## Directory Structure
 
+```
 Document_Scanner/
  ├── app.py
  ├── blueprints/
@@ -76,6 +77,7 @@ Document_Scanner/
  ├── utils/
  │    ├── nlp_utils.py
  └── database.db   (created on first run)
+```
 
 
 ## Setup Instructions
